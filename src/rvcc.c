@@ -4,6 +4,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __riscos
+void *check_malloc(size_t s, const char *fn, int line)
+{
+    void *m = malloc(s);
+    /* printf("Allocate %i bytes at %s, line %i\n", s, fn, line); */
+    if (m == NULL)
+    {
+        fprintf(stderr, "Out of memory for allocation of %i bytes at %s line %i\n", s, fn, line);
+        exit(1);
+    }
+    return m;
+}
+#define malloc(_s) check_malloc(_s, __FILE__, __LINE__)
+#endif
+
 #include "defs.c"
 #include "globals.c"
 #include "helpers.c"
@@ -16,7 +31,11 @@
 #include "codegen.c"
 
 /* embedded clib */
+#ifndef __riscos
 #include "rvclib.inc"
+#else
+#include "rvclib-inc.c"
+#endif
 
 int main(int argc, char *argv[])
 {
