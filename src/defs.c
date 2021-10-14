@@ -10,9 +10,17 @@
 #define MAX_LOCALS 64
 #define MAX_FIELDS 64
 #define MAX_FUNCTIONS 1024
-#define MAX_BLOCKS 1048576
+#ifndef __riscos
+#define MAX_BLOCKS 1048576 /* Note: This requires about 1044 MB */
+#else
+#define MAX_BLOCKS (1024)
+#endif
 #define MAX_TYPES 64
+#ifndef __riscos
 #define MAX_IL 262144
+#else
+#define MAX_IL (1024 * 8)
+#endif
 #define MAX_SOURCE 1048576
 #define MAX_CODE 1048576
 #define MAX_DATA 1048576
