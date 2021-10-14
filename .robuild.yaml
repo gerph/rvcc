@@ -1,0 +1,52 @@
+%YAML 1.0
+---
+
+# Example .robuild.yml file
+
+# Source is optional (NYI), and should be a URL to source the content from
+#source: <url>
+
+# Defines a list of jobs which will be performed.
+# Only 1 job will currently be executed.
+jobs:
+  build:
+    # Env defines system variables which will be used within the environment.
+    # Multiple variables may be assigned.
+    env:
+      "Sys$Environment": ROBuild
+
+    # Directory to change to before running script
+    #dir: <working directory>
+
+    # Commands which should be executed to perform the build.
+    # The build will terminate if any command returns a non-0 return code or an error.
+    script:
+      - cdir Artifacts
+      - dir RISCOS
+
+      # I've not implemented *WimpSlot, or any other application space changing command, but we need lots
+      # of memory for this. However, we can drop in to BASIC, change the application slot, and then
+      # return here.
+      - Key1SYS <34>OS_ChangeDynamicArea<34>,-1,1024*1024*20|MQUIT|M
+      - FX138,0,129
+      - BASIC
+      # We now have an application slot of 20MB
+
+      - echo **** Building compiler ****
+      - amu -f Makefile BUILD32=1
+
+      - echo **** Copy for artifacting ****
+      - copy aif32.rvcc ^.Artifacts.rvcc ~CVR
+
+      - echo **** Building test ****
+      - /aif32.rvcc -o hello-world/arm -march=arm32 ^.tests.blank/c
+
+      - copy hello-world/arm ^.Artifacts.hello-world/arm ~CVR
+
+    # Outputs from the build are defined in artifacts
+    # These are a list of artifacts to report directories or files.
+    # Only a single item is currently supported.
+    artifacts:
+      # Each element of the artifacts should have a path key, which gives the file or
+      # directory to return.
+      - path: Artifacts
