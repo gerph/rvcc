@@ -41,7 +41,10 @@ OBJS       = o.rvcc
 
 include LibraryCommand
 
+ifeq (${BUILD64},)
 CFLAGS_BASE += -fn
+else
+endif
 
 
 #---------------------------------------------------------------------------
