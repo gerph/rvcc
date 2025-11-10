@@ -23,6 +23,11 @@ void s_load(char *file)
 	printf("Loading source file %s\n", file);
 
 	f = fopen(file, "rb");
+    if (f == NULL)
+    {
+        printf("Cannot read file '%s'\n", file);
+        exit(1);
+    }
 	for (;;) {
 		if (fgets(buffer, MAX_LINE_LEN, f) == NULL) {
 			fclose(f);

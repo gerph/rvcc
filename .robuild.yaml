@@ -14,6 +14,7 @@ jobs:
     # Multiple variables may be assigned.
     env:
       "Sys$Environment": ROBuild
+      "Alias$AMU": "HostAMU %*0"
 
     # Directory to change to before running script
     #dir: <working directory>
@@ -24,12 +25,7 @@ jobs:
       - cdir Artifacts
       - dir RISCOS
 
-      # I've not implemented *WimpSlot, or any other application space changing command, but we need lots
-      # of memory for this. However, we can drop in to BASIC, change the application slot, and then
-      # return here.
-      - Key1SYS <34>OS_ChangeDynamicArea<34>,-1,1024*1024*20|MQUIT|M
-      - FX138,0,129
-      - BASIC
+      - AppSize 20000K
       # We now have an application slot of 20MB
 
       - echo **** Building compiler ****
@@ -39,7 +35,7 @@ jobs:
       - copy aif32.rvcc ^.Artifacts.rvcc ~CVR
 
       - echo **** Building test ****
-      - /aif32.rvcc -o hello-world/arm -march=arm32 ^.tests.blank/c
+      - /aif32.rvcc -o hello-world/arm -march=arm32 ^.tests.c.blank
 
       - copy hello-world/arm ^.Artifacts.hello-world/arm ~CVR
 
